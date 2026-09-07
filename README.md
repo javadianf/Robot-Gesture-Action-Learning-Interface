@@ -2,11 +2,15 @@
 
 **Master Thesis. Learning from Demonstration for mobile robot navigation, using body gestures as the command modality.**
 
-**Author:**
+**Author:** Fatemeh Javadian
 
-**Supervisors:**
+**Supervisors:** Prof. Dr. Frank Hoffmann
 
-**Institution:**
+**Institution:** Lehrstuhl für Regelungs Systemtechnik (RST), Fakultät ET / IT, Technische Universität Dortmund
+
+
+Licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license. See LICENSE. Copyright (c) Javadian. All rights reserved.
+
 
 <p align="center">
   <img src="docs/images/robot_hardware_and_sensors.png" width="820" alt="Pioneer 3-DX with omnidirectional camera, Kinect on an actuated pan head, laser scanner and onboard laptop">
@@ -266,11 +270,13 @@ Variance of the curvature distribution, lower meaning a smoother path:
 
 ## Related publication
 
-A paper based on this thesis was published by the institute.
+This thesis formed the basis of the following publication by the institute, where the gesture-based demonstration mode,
+including its implementation and experimental evaluation, was developed within the scope of this work, the paper draws on the work in this thesis, and the thesis is the primary and complete record of it.
 
-> _[publication reference placeholder]_
+> _K.K. Narayanan, L.F. Posada, F. Hoffmann and T. Bertram, “Human-Machine Interfaces for Intuitive and
+Effective Demonstrations of Mobile Robot Behaviors,” in Proceedings of the 22. Workshop Computational
+Intelligence, KIT Scientific Publishing, Dortmund, 2014, Band 45, p. 427._
 
-Note on authorship: the paper draws on the work in this thesis, and the thesis is the primary and complete record of it.
 
 ---
 
@@ -279,13 +285,5 @@ Note on authorship: the paper draws on the work in this thesis, and the thesis i
 _Source files are being added. This section will list them once the upload is complete._
 
 ---
-
-## Status of this repository
-
-This is an **archive**. The code was written for one specific laboratory setup that no longer exists, running a ROS distribution that is long out of support. It is published to document the work, not to be run.
-
-Files are kept as they were written. Absolute paths that referred to the original machine have been replaced with placeholders, and nothing else has been modernised, refactored or corrected. **Old student code that looks like old student code is the honest presentation of an archive**, and any attempt to make it look otherwise would be misleading.
-
 ## License
-
-See `LICENSE`.
+**License:** CC BY-NC-ND 4.0 — https://creativecommons.org/licenses/by-nc-nd/4.0/ See `LICENSE`.
