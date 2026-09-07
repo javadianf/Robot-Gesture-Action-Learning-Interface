@@ -20,17 +20,17 @@ A human walks behind a mobile robot and drives it by turning a hypothetical stee
 
 ---
 
-## Why this project still matters
+## Vision-Gesture learning model vs VLA
 
-**Structurally, this is the same problem that vision-language-action models address today.** The system takes a perceived instruction together with the current scene and maps them to a robot action, closed in a real-time loop on physical hardware. The only substitution is the command modality: **gestures instead of language.**
+**Structurally, this is the same problem that vision-language-action models address.** The system takes a perceived instruction together with the current scene and maps them to a robot action, closed in a real-time loop on physical hardware. The only substitution is the command modality: **gestures instead of language.**
 
-| This work | Modern equivalent |
+| This work | VLA |
 |---|---|
 | Gesture command captured by RGB-D, mapped to `(v, ω)` | **Vision-language-action**: instruction plus scene mapped to action |
 | Human demonstrates, robot records its own perception-action pairs | **Imitation learning**, demonstration data collection |
 | Actuated pan head moves the sensor to keep the instruction observable | **Active perception** |
 | Teacher intent versus what the robot can actually perceive | **Human-robot cognitive alignment**, the correspondence problem |
-| Sonar time-to-collision override on top of the learned command | **Safety layer over a learned policy** |
+| Ultrasonic time-to-collision sensors override on top of the learned command | **Safety layer over a learned policy** |
 
 Two conclusions from this project that carried forward:
 
@@ -91,7 +91,7 @@ Every gesture feature lives in image space, so the chain from the depth sensor t
 The command gesture deliberately reuses an existing human motor skill. **The teacher turns an imaginary steering wheel and the robot turns the same way.** No controller, no training, no interface to learn.
 
 <p align="center">
-  <img src="docs/images/thesis_steering_angle_pose_sequence.png" width="820" alt="Seven poses from -85 to +85 degrees showing the angle between body line and hand line">
+  <img src="docs/images/steering_angle.png" width="820" alt="Seven poses from -85 to +85 degrees showing the angle between body line and hand line">
 </p>
 
 The steering angle is the angle between the **body line** through head, neck and torso, and the **hand line** through left and right hand. The PSI calibration pose, where the two lines are perpendicular, defines zero.
