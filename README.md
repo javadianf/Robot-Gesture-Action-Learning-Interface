@@ -12,11 +12,34 @@
 Licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license. See LICENSE. Copyright (c) Javadian. All rights reserved.
 
 
-<p align="center">
-  <img src="docs/images/robot_hardware_and_sensors.png" width="820" alt="Pioneer 3-DX with omnidirectional camera, Kinect on an actuated pan head, laser scanner and onboard laptop">
-</p>
 
-A human walks behind a mobile robot and drives it by turning a hypothetical steering wheel in the air. An RGB-D camera on an actuated pan head watches the human, a skeleton tracker extracts the joints, and the resulting gesture is mapped in real time to the translational and rotational velocity of a differential drive base. The purpose is not teleoperation for its own sake. It is to **generate high fidelity training data for Learning from Demonstration**, where the quality of the demonstration, not the learning algorithm, is what limits generalization.
+## Description
+
+This project develops an intuitive human-machine interface for generating high-quality training demonstrations for Learning from Demonstration on a mobile robot. The interface allows a human demonstrator to control the robot through natural steering gestures, without using a physical controller. An RGB-D camera mounted on an actuated pan head observes the demonstrator, a skeleton-tracking pipeline extracts the relevant body joints, and the detected gestures are mapped in real time to the translational and rotational velocities of a differential-drive mobile base.
+
+The central objective is not teleoperation itself, but the acquisition of accurate and consistent demonstration data, so it is to **generate high fidelity training data for Learning from Demonstration**. In Learning from Demonstration, the quality of the demonstrations directly affects the behavior that can be learned and its ability to generalize. The system therefore focuses on providing an intuitive and responsive interaction mechanism that enables the demonstrator to generate reliable motion examples while remaining naturally engaged with the robot and its environment.
+
+### System and platform
+Hardware: Pioneer 3DX differential-drive
+robot, onboard laptop, Kinect (RGB-D) on an
+actuated pan head, 360° omnidirectional camera,
+sonar ring, laser scanner.
+
+Tools: ROS, OpenNI skeletal tracking, TF
+transform tree, OpenCV, C++, with real-time
+velocity-command generation and synchronized
+multi-sensor data logging.
+
+<table>
+  <tr>
+    <td><img src="docs/images/robot_hardware_sensors_setup.png" width="450"></td>
+    <td rowspan="2"><img src="docs/images/pion.png" width="500"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/setup.png" width="450"></td>
+  </tr>
+</table>
+
 
 ---
 
@@ -39,7 +62,7 @@ Two conclusions from this project that carried forward:
 
 ---
 
-## What was built
+## Demonstration modes
 
 Three demonstration interfaces were implemented and compared on identical navigation tasks: a **joystick** with direct velocity mapping, **gesture based demonstration** with the robot observing the teacher, and **steering wheel teleoperation** where the operator sees only the robot's own omnidirectional camera stream.
 
