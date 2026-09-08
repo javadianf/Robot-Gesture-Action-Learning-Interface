@@ -349,9 +349,8 @@ This is sent once to the Kinect's internal tilt motor, which has a travel range 
 
 The interface is not one-way. Audio messages announce state changes and obstacle warnings, and a live view shows the teacher **what the robot currently believes about them**: tracked joint positions, whether they are inside the desired image region, and the velocities being applied right now. Here is a sample demo mode demonstrated below.
 
-<p align="center">
-  <img src="docs/images/displayss.png" width="400" alt="Live operator feedback view showing tracked joints, the desired image region and the applied velocities">
-</p>
+<p align="center"><img src="docs/images/bidirectional_feedback_loopy.png" height="250"> <img src="docs/images/displayss.png" height="250" alt="Live operator feedback view showing tracked joints, the desired image region and the applied velocities"></p>
+
 
 This closes the loop on the human side and is what let non-experts correct their own gestures instead of being told how to stand. It measurably shortened preparation time.
 
@@ -412,35 +411,30 @@ Image data and motion commands travel over a TCP/IP client-server link. Loss of 
 ### Time to complete the task
 
 <p align="center">
-  <img src="docs/images/fig7_average_demonstration_time.png" width="760" alt="Average demonstration duration for the three modes across all scenarios">
+  <img src="docs/images/fig7_average_demonstration_time.png" width="500" alt="Average demonstration duration for the three modes across all scenarios">
 </p>
 
 ### Number of commands issued
 
 <p align="center">
-  <img src="docs/images/fig8_number_of_commands.png" width="700" alt="Average number of velocity commands for the three modes across all scenarios">
+  <img src="docs/images/fig8_number_of_commands.png" width="500" alt="Average number of velocity commands for the three modes across all scenarios">
 </p>
 
 ### Smoothness of the recorded demonstrations
 
 <p align="center">
-  <img src="docs/images/fig9_smoothness_snr.png" width="720" alt="Smoothness of the recorded curvatures expressed as signal-to-noise ratio">
+  <img src="docs/images/fig9_smoothness_snr.png" width="500" alt="Smoothness of the recorded curvatures expressed as signal-to-noise ratio">
 </p>
 
-**What the numbers say:**
+**interpretation:**
 
 - **The gesture interface produced the least noisy demonstration data of the three.** Since the point of the exercise is training data for Learning from Demonstration, this is the result that matters most.
 - **Joystick demonstrations were the noisiest.** Holding a translational velocity steady while simultaneously applying rotation is something humans do badly with a joystick, and non-experts degrade sharply. Joystick is the fastest interface to pick up, and the fastest to finish a task, but not the one that produces the best data.
 - **Steering wheel teleoperation was consistently the slowest**, especially on medium complexity behaviors like slalom and door passing, because the operator has no direct view of the robot and no depth cue from the camera image.
 - **Gesture demonstration performed consistently well even with non-experts**, after a short preparation period.
 
-Participants also rated the three interfaces after their sessions. **The gesture interface was rated the most enjoyable to use by a large margin**, while the joystick was rated easiest to pick up. Enjoyment is not a trivial finding here: demonstration data collection depends on human participants being willing to keep going.
 
-<p align="center">
-  <img src="docs/images/thesis_questionnaire_results.png" width="700" alt="Questionnaire results comparing the three interfaces on fun, ease and preparation time">
-</p>
 
-<details>
 <summary><b>Detailed per-behavior tables from the thesis</b></summary>
 
 <br>
@@ -484,7 +478,7 @@ Variance of the curvature distribution, lower meaning a smoother path:
 | Obstacle avoidance | 13396 | | 47360 | 10520 |
 | Door passing | 2301 | | 2399 | 2542 |
 
-</details>
+
 
 ---
 
