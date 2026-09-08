@@ -97,31 +97,56 @@ The gesture interface is the main contribution of the thesis and the bulk of the
   <img src="docs/images/system_control_flow.png" width="700" alt="Full control flow of the interface from calibration through velocity output">
 </p>
 
-### Coordinate frames and projection
+### Coordinate frames and camera projection
 
 Every gesture feature lives in image space, so the chain from the depth sensor to the pixel plane had to be correct and cheap to evaluate every cycle.
 
 
 
-<p align="center"><img src="docs/images/transform_.png" height="250"> <img src="docs/images/frames.png" height="250"></p>
+<p align="center"><img src="docs/images/transform_.png" height="240"> <img src="docs/images/rotate.png" height="240"></p>
 
+<p align="center"><img src="docs/images/Projection.png" height="280" alt="Perspective projection model used to map 3D joint positions into the image plane"> <img src="docs/images/frames.png" height="280"></p>
 
+3D camera coordinates project onto the 2D image plane through a pinhole model. For a point $(X,Y,Z)$ with focal length $f$:
+ 
+$$
+\begin{pmatrix} x \\\\ y \\\\ f \end{pmatrix} = \frac{f}{Z} \cdot \begin{pmatrix} X \\\\ Y \\\\ Z \end{pmatrix}
+$$
+ 
+Written as a linear transform on homogeneous coordinates $(u,v,w)$:
+ 
+$$
+\begin{pmatrix} v \\\\ u \\\\ w \end{pmatrix} = \begin{pmatrix} f & 0 & 0 & 0 \\\\ 0 & f & 0 & 0 \\\\ 0 & 0 & 1 & 0 \end{pmatrix} \cdot \begin{pmatrix} X \\\\ Y \\\\ Z \\\\ 1 \end{pmatrix}, \qquad
+\begin{cases} x = \dfrac{u}{w} = f\dfrac{X}{Z} \\\\[4pt] y = \dfrac{v}{w} = f\dfrac{Y}{Z} \end{cases}
+$$
+ 
+The camera coordinate frame is used directly as the reference frame, since it moves with the robot and all distances and velocities are relative to it, so no extrinsic calibration matrix is needed. The intrinsic calibration matrix (camera matrix) $\Omega$ maps a 3D point $\vec{V}$ in camera coordinates to the pixel coordinate frame $\vec{p} = (x,y,1)^T$:
+ 
+$$
+\vec{p} = \frac{1}{f}\Omega\vec{V}
+$$
+ 
+If lens distortion is not negligible, a tangential distortion term $\vartheta$ and a radial term are applied first. With $r^2 = x^2+y^2$ and distortion coefficients $l_{(1)}\ldots l_{(5)}$:
+ 
+$$
+\vartheta = \begin{pmatrix} 2l_{(3)}xy + l_{(4)}(r^2+2x^2) \\\\ l_{(3)}(r^2+2x^2) + 2l_{(4)}xy \end{pmatrix}
+$$
+ 
+$$
+\begin{pmatrix} x' \\\\ y' \end{pmatrix} = \left(1 + l_{(1)}r^2 + l_{(2)}r^4 + l_{(5)}r^6\right)\begin{pmatrix} x \\\\ y \end{pmatrix} + \vartheta
+$$
+ 
+In this system lens distortion was found to be close to zero and was ignored, so the final pixel coordinates come directly from the intrinsic matrix:
+ 
+$$
+\begin{pmatrix} x \\\\ y \\\\ 1 \end{pmatrix} = \Omega \cdot \begin{pmatrix} x' \\\\ y' \\\\ 1 \end{pmatrix}, \qquad
+\Omega = \begin{pmatrix} f_x & k f_x & O_x \\\\ 0 & f_y & O_y \\\\ 0 & 0 & 1 \end{pmatrix}
+$$
+ 
+$k$ is the pixel skew coefficient. This is the transform used to turn the five tracked joint positions (head, neck, torso, left hand, right hand) from the 3D camera frame into the 640x480 image frame used for every gesture feature below.
 <p align="center">
-  <img src="docs/images/Projection.png" width="900" alt="Perspective projection model used to map 3D joint positions into the image plane">
+  <img src="docs/images/position.png" width="500" alt="psi">
 </p>
-
-
-### Pan and tilt correction
-
-For reliable gesture tracking, the person should remain near the center of the camera image. Tilt correction is performed using the Kinect's internal motor, while pan, or gaze, correction is handled by the servo motor mounted below the Kinect. After the person is detected, the pan and tilt mechanisms adjust the camera orientation to place the person near the center of the image, after which joint tracking begins. This correction continues throughout the process. If the person moves away from the center or approaches the edge of the camera's field of view, the camera follows them by updating the pan and tilt angles accordingly. Pan and tilt correction therefore operate continuously alongside joint tracking, allowing the camera to maintain the person in view throughout the demonstration.
-
-Tilt Correction:
-<p align="center">
-  <img src="docs/images/correction_.png" width="500">
-</p>
-
-Pan correction:
-<p align="center"><img src="docs/images/calib.png" height="150"> <img src="docs/images/cor.png" height="150"></p>
 
 ### The steering gesture
 
@@ -133,6 +158,52 @@ The command gesture deliberately reuses an existing human motor skill. **The tea
 
 The steering angle is the angle between the **body line** through head, neck and torso, and the **hand line** through left and right hand. The PSI calibration pose, where the two lines are perpendicular, defines zero.
 
+#### Kinematic model
+The robot is modelled as a standard unicycle. With position $(x,y)$ and heading $\gamma$, translational velocity $V$ and rotational velocity $\omega$:
+ 
+$$
+\begin{pmatrix} \dot{x} \\\\ \dot{y} \\\\ \dot{\gamma} \end{pmatrix} = \begin{pmatrix} -\sin\gamma & 0 \\\\ \cos\gamma & 0 \\\\ 0 & 1 \end{pmatrix} \cdot \begin{pmatrix} V \\\\ \omega \end{pmatrix}
+$$
+ 
+This is the target model that the gesture interface has to supply $(V,\omega)$ for.
+ 
+
+ 
+#### Rotational velocity from the steering gesture
+The steering angle is the angle between the body line (head to torso) and the hand line (left hand to right hand), read from the projected image coordinates $I$ of each joint:
+ 
+$$
+\vec{u_1} = I_H - I_T, \qquad \vec{u_2} = I_R - I_L, \qquad \theta = \arccos\left(\frac{\vec{u_1}\cdot\vec{u_2}}{|\vec{u_1}||\vec{u_2}|}\right)
+$$
+ 
+The PSI calibration pose, where the hand line is perpendicular to the body line, is defined as zero. Right hand raised, left hand lowered gives a positive angle; the reverse gives negative. Angles are folded into $[-\pi/2, \pi/2]$ radians.
+ 
+
+ 
+#### Offset, rotation range and rotational velocity
+Two thresholds bound the usable gesture range: $\text{offset}_{min}$, below which an angle is treated as zero to reject noise and unintentional movement, and $\text{offset}_{max}$, above which the angle is clamped to a constant maximum rotation. The usable rotation range is:
+ 
+$$
+\Theta = |\text{offset}_{max}| - |\text{offset}_{min}|
+$$
+ 
+The steering angle $\theta$ maps linearly onto rotational velocity within that range, given a maximum rotational velocity $V_{max}$:
+ 
+$$
+V_r = \left(\frac{\theta \times V_{max}}{\Theta}\right)
+$$
+ 
+A mean filter of order 5 smooths the last five computed values before they are sent to the robot:
+ 
+$$
+V_{final} = \frac{1}{5}\sum_{i=1}^{5} V_r(i)
+$$
+ 
+This is what prevents a single noisy tracker frame from producing a visible jerk in the robot's rotation.
+
+
+
+
 <p align="center"><img src="docs/images/steering_angle.png" height="250" alt="Seven poses from -85 to +85 degrees showing the angle between body line and hand line"> <img src="docs/images/wheel.png" height="250"></p>
 
 
@@ -140,20 +211,146 @@ A minimum offset suppresses tracker noise and small unintended movement. A maxim
 
 ### Translational velocity from proxemics
 
-**The robot holds the distance to the teacher that was measured at calibration.** Walking forward closes the gap and the robot accelerates. Stopping restores the gap and the robot stops. The robot therefore reproduces the teacher's own walking pattern rather than an abstract velocity command. A proportional feedback loop on the distance error drives the correction. The robot halts entirely if the teacher gets closer than 30 percent of the reference distance, or if tracking is lost. Robust tracking held over roughly **1.5 to 3.5 metres**.
+**The robot holds the distance to the teacher that was measured at calibration.** Walking forward closes the gap and the robot accelerates. Stopping restores the gap and the robot stops. The robot therefore reproduces the teacher's own walking pattern rather than an abstract velocity command. A proportional feedback loop on the distance error drives the correction. The robot halts entirely if the teacher gets closer than 30 percent of the reference distance, or if tracking is lost. Robust tracking held over roughly **1.5 to 3.5 metres**. Below a minimum distance $d_{min}$ the robot is stopped over 3 seconds. Between $d_{min}$ and $d_{start}$, velocity is a linear function of distance $d$:
+ 
+$$
+V = \frac{-V_{max}}{d_{start}-d_{min}}d + \frac{d_{start}\cdot V_{max}}{d_{start}-d_{min}} = \frac{V_{max}}{d_{start}-d_{min}}(d_{start}-d)
+$$
 
-### Active perception: the pan head
+<p align="center">
+  <img src="docs/images/trans.png" width="800">
+</p>
+ 
+So $V=0$ for $d \ge d_{start}$ or $d \le 0$ outside the working band, $V=V_{max}$ at $d=d_{min}$, and it interpolates linearly in between; this is the calibration curve, not the running controller.
+ 
+The running controller is a PD loop on the distance error, not the open-loop curve above. $d_{start}$ is the reference, the current measured distance $d$ is the feedback, and the error $e = d_{start}-d$ produces a velocity correction $\Delta V$ added to the robot's current velocity:
+ 
+$$
+\Delta V = \frac{\Delta V_{max}}{e_{max}}\cdot e, \qquad e_{max}=d_{start}-d_{min}
+$$
+ 
+<p align="center">
+  <img src="docs/images/controller.png" width="800">
+</p>
 
-The Kinect has a narrow horizontal field of view. The teacher moves, the robot rotates, and the demonstration is destroyed the instant the teacher leaves frame. **The camera was therefore mounted on an external servo and driven by image-based visual servoing**, using the image Jacobian to convert the pixel error into a pan rate.
+This closed loop is also what keeps Kinect tracking stable, since tracking error grows with the relative velocity between sensor and subject, so damping the response reduces both overshoot and the chance of losing the user.
 
-The error is taken from the **left and right hand positions** rather than the head, because measurement showed the head frame was substantially noisier than the hand frames in this tracker. The two hand errors are averaged into a single correcting angle and written to the servo over a serial link, with travel limited to plus or minus 90 degrees. Tilt is computed once after calibration by triangulation on the head position, so that the teacher is vertically centred before the demonstration begins.
+
+#### Safety override: time to collision
+ 
+Sonar gives the distance to the nearest obstacle along the robot's current circle of constant curvature, $d_{curvature}$. This converts to a time to collision at the current velocity:
+ 
+$$
+t_o = \frac{d_{curvature}}{V_{robot}}
+$$
+ 
+The commanded velocity is capped so that the time to collision never drops below a safety threshold $t_{safe}$:
+ 
+$$
+V_{safe} = \min\left(V_{robot}, \frac{d_{curvature}}{t_{safe}}\right)
+$$
+ 
+Rotational velocity is left untouched by this override, so the teacher can still steer away from the obstacle even while translation is being held back.
+
+### Active perception: pan and tilt correction
+##### Active pan-following control
+
+The Kinect has a narrow field of view, so reliable gesture tracking requires the teacher to remain near the center of the camera image. As the teacher moves and the robot changes orientation, the teacher can otherwise move toward the edge of the image or leave the field of view entirely. To prevent this, the camera orientation is actively adjusted in both pan and tilt throughout the demonstration.
+
+Horizontal correction is performed using an external servo motor mounted below the Kinect and controlled through image-based visual servoing. The image Jacobian is used to convert the pixel error into a pan rate. The error is calculated from the **left and right hand positions** rather than the head, because measurements showed that the head frame was substantially noisier than the hand frames in this tracker. The two hand errors are averaged into a single correction signal and sent to the servo over a serial link, with the pan range limited to plus or minus 90 degrees.
+Pan correction:
+<p align="center"><img src="docs/images/calib.png" height="150"> <img src="docs/images/cor.png" height="150"></p>
+
+Pan runs continuously, unlike tilt. The servoing error is the standard image-based visual servo form, the gap between the current image feature $s(m(t),a)$ and its desired value $S$:
+ 
+$$
+e(t) = s(m(t),a) - S
+$$
+ 
+Here the feature is the teacher's position in frame, kept inside a 120-pixel-wide band around the principal point at (317.3, 234.3). The projection of a 3D camera-frame point onto the normalized image plane and its time derivative under camera motion:
+ 
+$$
+\begin{cases} x = \dfrac{X}{Z} \\\\ y = \dfrac{Y}{Z} \end{cases}
+\qquad
+\begin{cases}
+\dot{x} = \dfrac{-v_x}{Z} + \dfrac{xv_z}{Z} - (1+x^2)w_y + xyw_x + yw_z \\\\[4pt]
+\dot{y} = \dfrac{-v_y}{Z} + \dfrac{yv_z}{Z} + (1+y^2)w_x - xyw_y - xw_z
+\end{cases}
+, \qquad \dot{x} = L_x \cdot V_c
+$$
+ 
+The interaction (image Jacobian) matrix $L_x$:
+ 
+$$
+L_x = \begin{pmatrix} \dfrac{-1}{Z} & 0 & \dfrac{x}{Z} & \dfrac{xy}{\lambda} & -(1+x^2) & y \\\\[6pt] 0 & \dfrac{-1}{Z} & \dfrac{y}{Z} & \dfrac{1+y^2}{\lambda} & -xy & -x \end{pmatrix}
+$$
+ 
+Full apparent image motion $(u,v)$ for a given pixel, as a function of the six camera velocity components $(v_x,v_y,v_z,w_x,w_y,w_z)$:
+ 
+$$
+\begin{pmatrix} u \\\\ v \end{pmatrix} = \begin{pmatrix} \dfrac{-1}{Z} & 0 & \dfrac{x}{Z} & \dfrac{xy}{\lambda} & -(1+x^2) & y \\\\[6pt] 0 & \dfrac{-1}{Z} & \dfrac{y}{Z} & \dfrac{1+y^2}{\lambda} & -xy & -x \end{pmatrix} \cdot \begin{pmatrix} v_x \\\\ v_y \\\\ v_z \\\\ w_x \\\\ w_y \\\\ w_z \end{pmatrix}
+$$
+ 
+Only the pan axis exists, so every camera velocity term except $w_x$ is zero:
+ 
+$$
+v_x=v_y=v_z=w_y=w_z=0
+$$
+ 
+which reduces the servoing law to a single scalar relation between horizontal pixel error and pan rate:
+ 
+$$
+\begin{pmatrix} \dot{u} \\\\ \dot{v} \end{pmatrix} = \begin{pmatrix} \Delta u \\\\ 0 \end{pmatrix} = \begin{pmatrix} xy \\\\ \dfrac{1+y^2}{\lambda} \end{pmatrix} w_x
+, \qquad
+\Delta u = \begin{pmatrix} 0 \\\\ \dfrac{1}{\lambda} \end{pmatrix} w_x
+, \qquad
+w_x = \lambda \cdot \Delta u
+$$
+ 
+The resulting pan rate $w_x$ (angle per second) is integrated into a heading change $\Delta\Psi$, and the servo is commanded to a new absolute heading relative to its last read position:
+ 
+$$
+\Psi_{new} = \Psi + \Delta\Psi
+$$
+ 
+sent over serial to the Maestro servo controller. Pan travel is limited to -90 to +90 degrees from the zero heading. Left and right hand image positions are used for this error rather than the head position, because the tracker was measured to return substantially noisier head coordinates than hand coordinates.
+The left and right hand pixel errors, $e_L$ and $e_R$, are each converted through the visual servoing law above into a pan correction angle, $\Psi_L$ and $\Psi_R$. The final commanded pan angle is the average of the two:
+
+$$
+\Psi = \frac{\Psi_R + \Psi_L}{2}
+$$
+
+---
+##### Active tilt-following control
+Vertical correction is performed using the Kinect's internal tilt motor. After the person is detected, the head position is used to determine the required tilt angle so that the teacher is vertically centered before joint tracking begins.
+
+Once tracking starts, pan and tilt correction operate alongside the joint-tracking process. If the teacher moves away from the center of the image or approaches the boundary of the camera's field of view, the camera orientation is updated accordingly. The pan and tilt mechanisms therefore allow the sensor to follow the teacher continuously and maintain a suitable view for gesture recognition throughout the demonstration.
+Tilt correction:
+<p align="center">
+  <img src="docs/images/correction_.png" width="500">
+</p>
+Tilt is a one-shot correction computed right after calibration, not a continuous loop like pan. From the initial head height in the camera frame and the desired head height in frame, triangulation gives the real distance to the camera:
+ 
+$$
+r_{real} = \sqrt{X_{init}^2 - Z_{init}^2}
+$$
+ 
+The tilt angle needed to move the head from its initial position to the desired centred position is:
+ 
+$$
+\alpha = \arctan\left(\frac{Z_{init}}{r_{real}}\right) - \arctan\left(\frac{Z_{desire}}{r_{real}}\right)
+$$
+ 
+This is sent once to the Kinect's internal tilt motor, which has a travel range of -30 to +30 degrees.
+
+
 
 ### Bidirectional feedback to the human
 
-The interface is not one-way. Audio messages announce state changes and obstacle warnings, and a live view shows the teacher **what the robot currently believes about them**: tracked joint positions, whether they are inside the desired image region, and the velocities being applied right now.
+The interface is not one-way. Audio messages announce state changes and obstacle warnings, and a live view shows the teacher **what the robot currently believes about them**: tracked joint positions, whether they are inside the desired image region, and the velocities being applied right now. Here is a sample demo mode demonstrated below.
 
 <p align="center">
-  <img src="docs/images/thesis_display_node_feedback.png" width="620" alt="Live operator feedback view showing tracked joints, the desired image region and the applied velocities">
+  <img src="docs/images/displayss.png" width="400" alt="Live operator feedback view showing tracked joints, the desired image region and the applied velocities">
 </p>
 
 This closes the loop on the human side and is what let non-experts correct their own gestures instead of being told how to stand. It measurably shortened preparation time.
