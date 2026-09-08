@@ -45,7 +45,7 @@ multi-sensor data logging.
 
 ## Vision-Gesture learning model vs VLA
 
-**Structurally, this is the same problem that vision-language-action models address.** The system takes a perceived instruction together with the current scene and maps them to a robot action, closed in a real-time loop on physical hardware. The only substitution is the command modality: **gestures instead of language.**
+From a system-level perspective, the project follows the same basic formulation as modern vision-language-action models. A perceived instruction is combined with information about the current scene and translated into a robot action, with the entire perception-to-action pipeline running as a closed real-time loop on physical hardware. The main difference lies in the instruction modality: the command is expressed through gestures rather than language.
 
 | This work | VLA |
 |---|---|
@@ -55,11 +55,11 @@ multi-sensor data logging.
 | Teacher intent versus what the robot can actually perceive | **Human-robot cognitive alignment**, the correspondence problem |
 | Ultrasonic time-to-collision sensors override on top of the learned command | **Safety layer over a learned policy** |
 
-Two conclusions from this project that carried forward:
 
-- **Moving a sensor to obtain a more informative observation is part of the system design, not an accident of the hardware.** The pan axis exists because the demonstration is unusable the moment the teacher leaves the field of view. That is active perception, arrived at from necessity.
-- **The effectiveness of the whole system is bounded by whether the control loop closes within the required time.** Every design decision in the perception pipeline was ultimately a latency decision.
+The project also led to two broader design principles that remain relevant to my later work:
 
+- **Moving a sensor to obtain a more informative observation is part of the system design, not merely a consequence of the hardware.** The pan axis is necessary because the demonstration becomes unusable once the teacher leaves the camera's field of view. In this system, active perception therefore emerges directly from a practical requirement.
+- **The overall system is only as effective as the real-time control loop it can sustain.** Every decision in the perception pipeline ultimately had to account for latency and whether the full loop could be closed within the required time.
 ---
 
 ## Demonstration modes
@@ -67,7 +67,7 @@ Two conclusions from this project that carried forward:
 Three demonstration interfaces were implemented and compared on identical navigation tasks: a **joystick** with direct velocity mapping, **gesture based demonstration** with the robot observing the teacher, and **steering wheel teleoperation** where the operator sees only the robot's own omnidirectional camera stream.
 
 <p align="center">
-  <img src="docs/images/fig1_three_demonstration_modes.png" width="800" alt="The three demonstration modes: joystick, gesture based, steering wheel teleoperation">
+  <img src="docs/images/methoden_.png" width="800" alt="The three demonstration modes: joystick, gesture based, steering wheel teleoperation">
 </p>
 
 These three are not just different input devices. They differ in **record mapping**, that is, in how the teacher's action corresponds to the robot's recorded action. The joystick is an identity mapping. The gesture interface is an indirect mapping and a case of shadowing, since teacher and robot have different degrees of freedom. Teleoperation removes the mismatch between what the teacher sees and what the robot sees, at the cost of removing depth perception from the teacher.
@@ -79,7 +79,7 @@ The gesture interface is the main contribution of the thesis and the bulk of the
 ## Perception and control pipeline
 
 <p align="center">
-  <img src="docs/images/gesture_pipeline_overview.png" width="960" alt="Gesture pipeline: user tracking, joint tracking, image projection, gaze correction, steering angle computation, velocity output">
+  <img src="docs/images/gesture.png" width="800" alt="Gesture pipeline: user tracking, joint tracking, image projection, gaze correction, steering angle computation, velocity output">
 </p>
 
 **Full pipeline implemented end to end on the robot:**
@@ -101,27 +101,40 @@ The gesture interface is the main contribution of the thesis and the bulk of the
 
 Every gesture feature lives in image space, so the chain from the depth sensor to the pixel plane had to be correct and cheap to evaluate every cycle.
 
-<p align="center">
-  <img src="docs/images/thesis_joint_frames_and_rviz.png" width="720" alt="Transforms between the camera coordinate frame and the joint coordinate frames, with an rviz visualisation">
-</p>
+
+
+<p align="center"><img src="docs/images/transform_.png" height="250"> <img src="docs/images/frames.png" height="250"></p>
+
 
 <p align="center">
-  <img src="docs/images/thesis_pinhole_projection_model.png" width="700" alt="Perspective projection model used to map 3D joint positions into the image plane">
+  <img src="docs/images/Projection.png" width="900" alt="Perspective projection model used to map 3D joint positions into the image plane">
 </p>
+
+
+### Pan and tilt correction
+
+For reliable gesture tracking, the person should remain near the center of the camera image. Tilt correction is performed using the Kinect's internal motor, while pan, or gaze, correction is handled by the servo motor mounted below the Kinect. After the person is detected, the pan and tilt mechanisms adjust the camera orientation to place the person near the center of the image, after which joint tracking begins. This correction continues throughout the process. If the person moves away from the center or approaches the edge of the camera's field of view, the camera follows them by updating the pan and tilt angles accordingly. Pan and tilt correction therefore operate continuously alongside joint tracking, allowing the camera to maintain the person in view throughout the demonstration.
+
+Tilt Correction:
+<p align="center">
+  <img src="docs/images/correction_.png" width="500">
+</p>
+
+Pan correction:
+<p align="center"><img src="docs/images/calib.png" height="150"> <img src="docs/images/cor.png" height="150"></p>
 
 ### The steering gesture
 
 The command gesture deliberately reuses an existing human motor skill. **The teacher turns an imaginary steering wheel and the robot turns the same way.** No controller, no training, no interface to learn.
 
 <p align="center">
-  <img src="docs/images/steering_angle.png" width="820" alt="Seven poses from -85 to +85 degrees showing the angle between body line and hand line">
+  <img src="docs/images/turn.png" width="500" alt="psi">
 </p>
 
 The steering angle is the angle between the **body line** through head, neck and torso, and the **hand line** through left and right hand. The PSI calibration pose, where the two lines are perpendicular, defines zero.
 
-<p align="center">
-  <img src="docs/images/fig3_psi_pose_and_steering.png" width="800" alt="PSI calibration pose, turn left and turn right as seen from the robot">
-</p>
+<p align="center"><img src="docs/images/steering_angle.png" height="250" alt="Seven poses from -85 to +85 degrees showing the angle between body line and hand line"> <img src="docs/images/wheel.png" height="250"></p>
+
 
 A minimum offset suppresses tracker noise and small unintended movement. A maximum offset clamps the range so a large gesture cannot command an unsafe rotation. What remains maps linearly to rotational velocity, then passes a mean filter of order five before it reaches the base.
 
