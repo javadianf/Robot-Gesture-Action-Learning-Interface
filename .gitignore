@@ -1,0 +1,86 @@
+# ROS (rosbuild)
+bin/
+lib/
+build/
+msg_gen/
+srv_gen/
+ROS_NOBUILD
+.rosinstall
+*.bag
+
+# ROS (catkin / colcon)
+devel/
+install/
+log/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile2
+build.make
+*.includecache
+CTestTestfile.cmake
+install_manifest.txt
+
+# C/C++ build output
+*.o
+*.a
+*.so
+*.so.*
+*.lo
+*.la
+*.d
+*.out
+
+# MATLAB
+*.asv
+*.m~
+*.mex
+*.mexw32
+*.mexw64
+*.mexa64
+*.mexglx
+*.mexmaci64
+*.mat
+slprj/
+codegen/
+
+# Visual Studio
+*.vcxproj.user
+*.suo
+*.sdf
+*.opensdf
+*.ncb
+Debug/
+Release/
+x64/
+ipch/
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.obj
+
+# Recorded / vendor data
+*.dbf
+*.DBF
+*.dbt
+*.DBT
+*.mdx
+*.MDX
+*.res
+*.hid
+*.lck
+*.dat
+*.id
+*.npa
+*.s7p
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+*~
