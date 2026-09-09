@@ -376,6 +376,17 @@ This closes the loop on the human side and is what let non-experts correct their
 
 **Stack:** C++ on ROS for everything real time, MATLAB for offline analysis of the recorded demonstrations.
 
+#### Software Demos
+RViz (ROS Visualization) is a 3D visualization tool for the Robot Operating System (ROS) framework that displays real-time sensor data, robot states, and environments to help developers debug applications. Live rviz view of the five tracked TF frames during a gesture demonstration:
+<p align="center"><img src="docs/images/rviz_demo1.png" height="250"> <img src="docs/images/rviz_demo2.png" height="250"></p>  
+
+The corridor map built and localized against live, in the same rviz session used to produce the trajectory plots that follow:
+<p align="center">
+  <img src="docs/images/rviz_amcl_map_running.png" width="820" alt="Live AMCL localization map in rviz, matching the corridor floor plan used in the trajectory validation figures below">
+</p>
+
+
+
 ### Omnidirectional imaging for the teleoperation mode
 
 The third interface streams the robot's own catadioptric image to a remote operator. Raw omnidirectional images are hard for humans to navigate from, so the image is **unwarped into a bird's-eye view by radial correction around the image centre**, which restores geometric consistency. Corridors then appear as bands of constant width.
@@ -456,10 +467,35 @@ The curve task required roughly a quarter turn, $\pi/2$ rad, between the marked 
 - **Gesture demonstration performed consistently well even with non-experts**, after a short preparation period.
 
 
+### Why the gesture interface produced better demonstrations
 
-<summary><b>Detailed per-behavior tables from the thesis</b></summary>
+The clearest comparison is the curve line task, where all four interface conditions
+performed the same manoeuvre and every signal was recorded identically.
 
-<br>
+### Gesture interface and demonstration quality
+
+The clearest comparison comes from the curve-line task, in which all four interface conditions were used to perform the same manoeuvre while the corresponding signals were recorded under identical conditions.
+
+<p align="center">
+  <img src="docs/images/fig5_5_curve_translational_velocity.png" width="500" alt="Translational velocity trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
+</p>
+
+**Maintaining a constant translational velocity while steering is difficult with direct manual control.**
+The expert joystick user maintains a velocity of approximately 0.5 m/s, but with visible variation, whereas the non-expert repeatedly oscillates between near-zero and 1.0 m/s during the same manoeuvre. The gesture interface produces the most stable velocity profile of the four conditions. Translational velocity is not commanded explicitly by the operator; instead, it is determined by the teacher's walking pace through the distance controller. This removes one degree of freedom from the interaction and allows the operator to concentrate on steering while forward motion follows a naturally stable human behaviour.
+
+<p align="center">
+  <img src="docs/images/fig5_6_curve_curvature_trajectory.png" width="500" alt="Curvature trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
+</p>
+
+**The difference is also reflected in the geometry of the demonstrated path.**
+Curvature is defined by the ratio of rotational to translational velocity and therefore characterises the shape of the trajectory independently of the speed at which it is executed. The variance of the curvature is used here as a measure of trajectory smoothness: joystick expert 5191, joystick non-expert 1923, steering wheel 958, and gesture HRI 364. The gesture interface therefore produces a curvature variance approximately fourteen times lower than that of the expert joystick condition, while a substantial difference is also observed for the non-expert joystick condition.
+
+**Why this matters for Learning from Demonstration.**
+In Learning from Demonstration, the recorded demonstration becomes training data for the learning algorithm. Variability and oscillations in the demonstrated actions are therefore not merely characteristics of the teleoperation interface; they become part of the behaviour presented to the learner. An interface can be fast, intuitive, and easy for a human operator to use while still producing demonstrations of lower quality for learning. This distinction is visible in the user study: participants rated the joystick as the easiest and most intuitive interface, and task completion was fastest with it, yet its recorded trajectories exhibited substantially greater variability than those produced with the gesture interface. For demonstration collection, the quality and consistency of the resulting data are therefore more important than teleoperation performance alone.
+
+
+
+### Detailed per-behavior tables from the thesis
 
 These tables are taken from the thesis, which reports selected demonstrations per behavior. The bar plots above aggregate over the full participant group, so the two sets of figures are not directly comparable.
 
