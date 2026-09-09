@@ -401,8 +401,30 @@ Image data and motion commands travel over a TCP/IP client-server link. Loss of 
 </p>
 
 **Fifteen volunteers** with varying levels of programming and robotics knowledge participated, each given at most ten minutes to become acquainted with all three interfaces. Conditions were checked before every run to keep them comparable across users. Laser-based Monte Carlo localization provided absolute robot coordinates in the map, and odometry was logged in parallel.
-
+  
 **Performance measures:** average time to complete the task, total number of velocity commands, average translational velocity, average curvature of the demonstrated trajectory, and the dispersion of the curvature distribution as a smoothness measure. Curvature is the ratio of commanded rotational to translational velocity, which decouples the shape of the demonstration from the speed at which it was performed and lets fast and slow runs be compared directly.
+
+---  
+## Per-behaviour validation  
+
+The final phase of the project validates each demonstrated behaviour individually: the recorded trajectory is checked against the intended path, and the relevant velocity or orientation signal is checked against what the task required. Straight line and curve line are shown below as examples; the same validation was carried out for all seven behaviours.
+
+### Straight line
+
+<p align="center">
+  <img src="docs/images/Experimental_validation_Straight_line.png" width="820" alt="Straight line validation: floor plan trajectory from localization and odometry, photo of the traversed corridor, and curvature trajectory near zero">
+</p>
+
+The robot's position was logged two ways during the run: from the laser-based localization system, taken as the reference, and from the robot's own wheel odometry, which is the estimate actually available to the onboard controller in real time. The two agree closely, both tracing a straight path from the marked start point to the marked end point in the corridor shown in the photo. The robot's orientation stayed close to constant through the run, and the curvature of the path, $V_{rot}/V_{trans}$, stayed within roughly ±10 rad/m of zero for the full 16 seconds, confirming the deviation from a straight line was negligible. Rotational velocity was correspondingly close to zero throughout, since the task only required the teacher to change the translational velocity.
+
+### Curve line
+
+<p align="center">
+  <img src="docs/images/Experimental_validation_Curve.png" width="820" alt="Curve line validation: floor plan trajectory from localization and odometry, photo of the traversed curved path, and orientation trajectory increasing over time">
+</p>
+
+The curve task required roughly a quarter turn, $\pi/2$ rad, between the marked start and end points. The recorded orientation trajectory increased from about 0.5 rad to about 1.9 rad over the 20 second demonstration, a change of about 1.4 rad (80.2°), close to the intended turn. Rotational velocity swung negative to drive the clockwise turn and returned to zero once the heading change was complete, while the steering angle demonstrated by the teacher peaked at about 1.1 rad. Translational velocity stayed roughly steady across the same interval, meaning the turn was driven while the robot kept moving rather than by stopping and rotating in place.
+
 
 ---
 
