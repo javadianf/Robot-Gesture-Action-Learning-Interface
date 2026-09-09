@@ -98,26 +98,13 @@ Orientation = R(:,4);% radian
 Full_path = '<LOCAL_PATH>\';
 % Topic = ['demo_door_passing_1                      ';'Time                                 ';'Rotational velocity set              ';'Rotational velocity read from robot  ';'Translational velocity set           ';'Translational velocit read from robot';'Left error                           ';'Right error                          ';'Average_error                        ';'Pan angle                            '; 'Curvature                            '  ; 'X Localization                       '; 'Y Localization                       '  ;  'X odometry                           ' ; 'Y odometry                           ' ; 'Orientation                          '; 'Steering angle                       ' ; 'Steering angle normalized            '; 'Distance                             '   ];
 % % 
-Topic = ['demo_homing_' zeros_ num2str(k)];  
+Topic = ['demo_corridor_following_' zeros_ num2str(k)];  
 
 parameters = ['Time                                 '
 ;'Rotational velocity set              '
 ;'Rotational velocity read from robot  '
 ;'Translational velocity set           '
-;'Translational velocit read from robot'
-;'Left error                           '
-;'Right error                          '
-;'Average_error                        '
-;'Pan angle                            '
-;'Curvature                            '
-;'X Localization                       '
-;'Y Localization                       '
-;'X odometry                           '
-;'Y odometry                           '
-;'Orientation                          '
-;'Steering angle                       '
-;'Steering angle normalized            '
-;'Distance                             '];
+;'Translational velocit read from robot'];
 
 
 
@@ -142,5 +129,5 @@ parameters = ['Time                                 '
 % save([Full_path 'Steering_angle_normalized' '.mat'], 'rotation_normalized');
 
 % save([Full_path 'demo_door_passing_23' '.mat'], 'Topic' , 'Time' , 'rotational_vel_set' ,'rotational_vel_robot' ,  'translational_vel_set', 'translational_vel_robot' , 'left_error' ,'right_error',  'average_error' , 'pan_angle', 'curveture' , 'local_pose_x' , 'local_pose_y' , 'robot_pose_x' ,'robot_pose_y' ,'Orientation' , 'rotation_real', 'rotation_normalized', 'distance_m');
-save([Full_path 'demo_homing_' zeros_ num2str(k) '.mat'], 'Topic', 'parameters' , 'Time' , 'rotational_vel_set' ,'rotational_vel_robot' ,  'translational_vel_set', 'translational_vel_robot' , 'left_error' ,'right_error',  'average_error' , 'pan_angle', 'curveture' , 'local_pose_x' , 'local_pose_y' , 'robot_pose_x' ,'robot_pose_y' ,'Orientation' , 'rotation_real', 'rotation_normalized', 'distance_m');
+save([Full_path 'demo_homing_' zeros_ num2str(k) '.mat'], 'Topic', 'parameters' , 'Time' , 'rotational_vel_set' ,'rotational_vel_robot' ,  'translational_vel_set', 'translational_vel_robot');
 end
