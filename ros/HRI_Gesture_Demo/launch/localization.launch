@@ -1,0 +1,91 @@
+<launch>
+
+  <node respawn="true" pkg="ROSARIA" type="RosAria" name="ARIA">
+	<param name="port" value="/dev/ttyS0"/>
+</node>
+  <node pkg="ROSARIA" type="transform" name="ARIA_tf">
+	<remap from="/RosAria/pose" to="/ARIA/pose"/>
+</node>
+
+<!-- 
+ joy node 
+  <node pkg="joy2Robot" type="joy" name="joystick" >
+    <param name="dev" type="string" value="/dev/input/js0" />
+    <param name="deadzone" value="0.05" />
+  </node>
+
+ Axes
+  <param name="axis_linear" value="1" type="int"/>
+  <param name="axis_angular" value="0" type="int"/>
+  <param name="scale_linear" value="2" type="double"/>
+  <param name="scale_angular" value="2" type="double"/>
+
+  <node pkg="joy2Robot" type="joy2Robot" name="joy2Robot">
+<remap from="/cmd_vel" to="/ARIA/cmd_vel"/>
+
+</node>
+-->
+
+
+
+
+	<!-- start amcl, laser,gmapping  -->
+
+		<node pkg="sicktoolbox_wrapper" name="LIDAR" type="sicklms">
+			<param name="port" value="/dev/ttyUSB0"/>
+		</node>
+<!--
+		<node pkg="gmapping" name="mapping" type="slam_gmapping">
+		</node>
+-->
+		
+<!-- copied from example "amcl_diff.launch" in amcl/examples-->
+<node pkg="amcl" type="amcl" name="amcl">
+  <!-- Publish scans from best pose at a max of 10 Hz -->
+  <param name="odom_model_type" value="diff"/>
+  <param name="odom_alpha5" value="0.1"/>
+  <param name="transform_tolerance" value="0.2" />
+  <param name="gui_publish_rate" value="10.0"/>
+  <param name="laser_max_beams" value="30"/>
+  <param name="min_particles" value="500"/>
+  <param name="max_particles" value="5000"/>
+  <param name="kld_err" value="0.05"/>
+  <param name="kld_z" value="0.99"/>
+  <param name="odom_alpha1" value="0.2"/>
+  <param name="odom_alpha2" value="0.2"/>
+  <!-- translation std dev, m -->
+  <param name="odom_alpha3" value="0.8"/>
+  <param name="odom_alpha4" value="0.2"/>
+  <param name="laser_z_hit" value="0.5"/>
+  <param name="laser_z_short" value="0.05"/>
+  <param name="laser_z_max" value="0.05"/>
+  <param name="laser_z_rand" value="0.5"/>
+  <param name="laser_sigma_hit" value="0.2"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_model_type" value="likelihood_field"/>
+  <!-- <param name="laser_model_type" value="beam"/> -->
+  <param name="laser_likelihood_max_dist" value="2.0"/>
+  <param name="update_min_d" value="0.2"/>
+  <param name="update_min_a" value="0.5"/>
+  <param name="odom_frame_id" value="odom"/>
+  <param name="resample_interval" value="1"/>
+  <param name="transform_tolerance" value="0.1"/>
+  <param name="recovery_alpha_slow" value="0.0"/>
+  <param name="recovery_alpha_fast" value="0.0"/>
+</node>
+
+<node name="map_server" pkg="map_server" type="map_server" args="$(env ROS_WORKSPACE)/RST_map/rst_map.yaml"/>
+
+<!--
+ <node pkg="turtlesim" name="mimic" type="mimic">
+    <remap from="input" to="turtlesim1/turtle1"/>
+    <remap from="output" to="turtlesim2/turtle1"/>
+  </node>
+-->
+
+
+
+
+</launch>
+

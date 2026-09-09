@@ -1,0 +1,16 @@
+<launch>
+  <include file="$(find HRI_Gesture_Demo)/launch/localization.launch" />
+
+
+
+
+ <node pkg="rviz" type="rviz" name="rviz">
+  </node>
+  <node pkg="camera1394" type="camera1394_node" name="camera1394" args="_guid:=00074813023186c0">
+  </node>
+
+
+  <node pkg="image_view" type="image_view" name="image_view"  args="image:=camera/image_raw"   launch-prefix="$(find HRI_Gesture_Demo)/scripts/global_localization_wrapper.sh">
+  </node>
+
+</launch>

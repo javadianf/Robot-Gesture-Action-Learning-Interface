@@ -1,0 +1,25 @@
+<launch>
+
+ <include file="$(find HRI_Gesture_Demo)/launch/rosaria_base.launch" />
+	<include file="$(find openni_launch)/launch/openni.launch" />
+
+
+
+  <node pkg="sound_play" type="soundplay_node.py" name="sound_play" output="screen">
+  </node>
+
+  <node pkg="kinect_aux" type="kinect_aux_node" name="kinect_aux" output="screen">
+  </node>
+
+  <node pkg="HRI_Gesture_Demo" type="control" name="control" args="demo_test kinect.txt">
+
+  </node>
+
+
+  <node pkg="HRI_Gesture_Demo" type="show" name="gesture_demo">
+  </node>
+
+  <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" output="screen">
+  </node>
+
+</launch>

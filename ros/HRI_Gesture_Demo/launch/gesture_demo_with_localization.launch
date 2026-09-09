@@ -1,0 +1,31 @@
+<launch>
+
+  <include file="$(find HRI_Gesture_Demo)/launch/localization.launch" />
+
+	<include file="$(find openni_launch)/launch/openni.launch" />
+<!--
+	 <include file="$(find HRI_Gesture_Demo)/launch/omnicam_recording.launch" />
+-->
+
+  <node pkg="sound_play" type="soundplay_node.py" name="sound_play" output="screen">
+  </node>
+
+  <node pkg="kinect_aux" type="kinect_aux_node" name="kinect_aux" output="screen">
+  </node>
+
+  <node pkg="HRI_Gesture_Demo" type="control" name="control" args="demo_test kinect.txt">
+<remap from="/RosAria/sonar" to="/ARIA/sonar"/>
+<remap from="/RosAria/cmd_vel" to="/ARIA/cmd_vel"/>
+  </node>
+
+
+  <node pkg="HRI_Gesture_Demo" type="show" name="gesture_demo">
+  </node>
+
+  <node pkg="HRI_Gesture_Demo" type="record" name="record" args="demo_test" output="screen"> 
+  </node>
+
+  <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" output="screen">
+  </node>
+
+</launch>

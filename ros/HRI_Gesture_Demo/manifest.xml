@@ -1,1 +1,33 @@
+<!-- SPDX-License-Identifier: CC-BY-NC-ND-4.0 -->
+<!-- Copyright (c) Javadian. All rights reserved. -->
+
+<package>
+  <description brief="HRI_Gesture_Demo">
+
+     HRI_Gesture_Demo
+
+  </description>
+  <x>x</x>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/HRI_Gesture_Demo</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="openni_camera"/>
+  <depend package="openni_tracker"/>
+  <depend package="ROSARIA"/>
+  <depend package="roslang"/>
+  <depend package="image_geometry"/>
+  <depend package="cv_bridge"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="opencv2"/>
+  <depend package="sound_play"/>
+  <depend package="kinect_aux"/>
+
+</package>
+
 
