@@ -1,0 +1,27 @@
+
+
+<package>
+  <description brief="learning_image_geometry">
+
+     learning_image_geometry
+
+  </description>
+  <x>x</x>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/learning_image_geometry</url>
+  <depend package="image_geometry"/>
+  <depend package="image_transport"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="tf"/>
+  <depend package="image_view"/>
+  <depend package="openni_camera"/>
+
+<export>
+  <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+</export>
+
+</package>
+
+

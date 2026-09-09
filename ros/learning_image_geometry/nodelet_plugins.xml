@@ -1,0 +1,9 @@
+
+
+<library path="src/nodelets">
+  <class name="openni_camera/DriverNodelet" type="openni_camera::DriverNodelet" base_class_type="nodelet::Nodelet">
+  <description>   
+  This is my nodelet.
+  </description>
+  </class>
+</library>
