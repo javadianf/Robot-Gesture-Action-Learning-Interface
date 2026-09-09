@@ -477,20 +477,20 @@ performed the same manoeuvre and every signal was recorded identically.
 The clearest comparison comes from the curve-line task, in which all four interface conditions were used to perform the same manoeuvre while the corresponding signals were recorded under identical conditions.
 
 <p align="center">
-  <img src="docs/images/fig5_5_curve_translational_velocity.png" width="500" alt="Translational velocity trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
+  <img src="docs/images/fig5_5_curve_translational_velocity_.png" width="500" alt="Translational velocity trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
 </p>
 
 **Maintaining a constant translational velocity while steering is difficult with direct manual control.**
 The expert joystick user maintains a velocity of approximately 0.5 m/s, but with visible variation, whereas the non-expert repeatedly oscillates between near-zero and 1.0 m/s during the same manoeuvre. The gesture interface produces the most stable velocity profile of the four conditions. Translational velocity is not commanded explicitly by the operator; instead, it is determined by the teacher's walking pace through the distance controller. This removes one degree of freedom from the interaction and allows the operator to concentrate on steering while forward motion follows a naturally stable human behaviour.
 
 <p align="center">
-  <img src="docs/images/fig5_6_curve_curvature_trajectory.png" width="500" alt="Curvature trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
+  <img src="docs/images/fig5_6_curve_curvature_trajectory_.png" width="500" alt="Curvature trajectory for the curve line task across joystick expert, joystick non-expert, steering wheel and gesture HRI">
 </p>
 
 **The difference is also reflected in the geometry of the demonstrated path.**
 Curvature is defined by the ratio of rotational to translational velocity and therefore characterises the shape of the trajectory independently of the speed at which it is executed. The variance of the curvature is used here as a measure of trajectory smoothness: joystick expert 5191, joystick non-expert 1923, steering wheel 958, and gesture HRI 364. The gesture interface therefore produces a curvature variance approximately fourteen times lower than that of the expert joystick condition, while a substantial difference is also observed for the non-expert joystick condition.
 
-**Why this matters for Learning from Demonstration.**
+**Importance for Learning from Demonstration.**
 In Learning from Demonstration, the recorded demonstration becomes training data for the learning algorithm. Variability and oscillations in the demonstrated actions are therefore not merely characteristics of the teleoperation interface; they become part of the behaviour presented to the learner. An interface can be fast, intuitive, and easy for a human operator to use while still producing demonstrations of lower quality for learning. This distinction is visible in the user study: participants rated the joystick as the easiest and most intuitive interface, and task completion was fastest with it, yet its recorded trajectories exhibited substantially greater variability than those produced with the gesture interface. For demonstration collection, the quality and consistency of the resulting data are therefore more important than teleoperation performance alone.
 
 
