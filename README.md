@@ -1,4 +1,4 @@
-# Human Machine Interface for Accurate Demonstrations of Mobile Robots Motions
+# Vision-Gesture Learning in Human Machine Interface for Accurate Demonstrations of Mobile Robots Motions
 
 **Master Thesis. Learning from Demonstration for mobile robot navigation, using body gestures as the command modality.**
 
