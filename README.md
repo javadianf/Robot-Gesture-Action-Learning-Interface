@@ -9,7 +9,7 @@
 **Institution:** Lehrstuhl für Regelungs Systemtechnik (RST), Fakultät ET / IT, Technische Universität Dortmund
 
 
-Licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license. See LICENSE. Copyright (c) Javadian. All rights reserved.
+Licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license. See LICENSE.
 
 
 
@@ -515,6 +515,20 @@ Variance of the curvature distribution, lower meaning a smoother path:
 - **Experiment design and user study** with fifteen participants, quantitative metrics, and a questionnaire, followed by statistical analysis of the recorded runs.
 - **Framing a human-robot interaction problem as a data quality problem**, which is the correct framing for imitation learning.
 
+
+## Project capabilities and key outcomes
+
+- **End-to-end robotics implementation on physical hardware**, covering RGB-D perception, coordinate transformations, feature extraction, control, and execution on a differential-drive mobile robot without an intermediate simulation stage.
+- **Real-time closed-loop operation** within the timing constraints of a 30 Hz sensing pipeline, including a visual servoing loop for active camera pan control.
+- **Image-based visual servoing from first principles**, with the control law derived from the image Jacobian rather than relying on a pre-built library implementation.
+- **Integration of multiple sensing and feedback modalities** under ROS, including RGB-D, laser, sonar, wheel odometry, a catadioptric camera, and servo feedback.
+- **Sensor-driven system design**, where measured tracking performance directly influenced the implementation. For example, the lower reliability of the head frame compared with the hand frames led to reformulating the gaze-error signal around the hand positions.
+- **An independent safety layer for obstacle avoidance**, separating collision prevention from the source of the motion command so that unsafe commands cannot directly drive the robot into an obstacle.
+- **Experimental evaluation with fifteen participants**, combining quantitative performance measures with questionnaire-based feedback and statistical analysis of the recorded trials.
+- **Treatment of human-robot interaction as a demonstration-quality problem**, with the interface designed to improve the consistency and usefulness of the data collected for Learning from Demonstration.
+
+
+
 ---
 
 ## Related publication
@@ -531,8 +545,36 @@ Intelligence, KIT Scientific Publishing, Dortmund, 2014, Band 45, p. 427._
 
 ## Repository contents
 
-_Source files are being added. This section will list them once the upload is complete._
 
+
+```
+ros/
+  HRI_Gesture_Demo/          main package: gesture control, recording, display
+    src/                     control_node, display_node, record_node, tf_listener_example
+    src/earlier_versions/    two earlier stages of control_node, kept for reference
+    launch/                  one launch file per run configuration
+    scripts/                 shell scripts that invoke the launch files
+  ROSARIA/                   Pioneer base driver, patched with odometry_tf_broadcaster
+  kinect_aux/                Kinect tilt motor node
+  learning_image_geometry/   stock package config, unmodified
+  pioneer_tf/                standalone TF broadcaster
+  teleop_base/                joystick/pedal teleoperation, two publisher variants
+  config/                    map file for the demo environment
+  setup/                     one-time environment setup scripts
+
+matlab/
+  gesture_pipeline/          steering angle, hand distance, image projection, filtering
+  dataset_analysis/          batch analysis of recorded demonstration logs
+  steering_wheel_gui/        remote teleoperation GUI (client/server)
+  sick_laser_interface/      laser serial protocol driver
+  particle_filter_sim/       Monte Carlo localization coursework, separate from the thesis
+
+tools/
+  servo_serial/              pan servo serial control (C++)
+  kinect_windows_mex/        Windows-only Kinect capture, MEX + Visual Studio project
+
+docs/images/                 figures used in this README
+```
 ---
 ## License
 **License:** CC BY-NC-ND 4.0 — https://creativecommons.org/licenses/by-nc-nd/4.0/ See `LICENSE`.
