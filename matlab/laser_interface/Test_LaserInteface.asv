@@ -1,0 +1,62 @@
+%sensorLaserInterface
+%
+%Autors:	Luis Felipe Posada, Oliver Birkholz
+%e-mail:	felipe.posada@tu-dortmund.de, oliver.birkholz@tu-dortmund.de
+%Date:      27.02.2012
+%
+%Input:    
+%Output:    
+%
+%Description:   This File Opens the sensorLaserInterface, get the Data and
+%               close the Interface
+%
+%Copyright (c) 2012 RST, Technische Universit�t Dortmund, Germany
+%www-rst.e-technik.uni-dortmund.de
+%
+clear
+clc
+%% Create Exit Gui
+global EXIT_VAR
+EXIT_VAR = 0;
+
+fig = openfig('control.fig'); %loads the figure.
+handles = guihandles(fig);
+
+%% Options
+PORT = 'COM2';
+BAUDRATE = 9600; % default after Powerreset
+sensor_Laser = sensorLaserInit(PORT,BAUDRATE); % Start the Communication
+% Open Set Speed
+sensor_Laser = sensorLaserSetMode(sensor_Laser,'Install'); % put into installtion-Mode
+sensor_Laser = sensorLaserChgkBaudRate(sensor_Laser,38400); % Change the BaudRate
+% Aviable BaudRates: 9600 kBaud #default aber Powerrest
+%                   19200 kBaud
+%                   38400 kBaud
+%                  500000 kBaud #only RS-422 with special Hardware
+sensor_Laser = sensorLaserChgScanMode(sensor_Laser,4 ); % Change the ScanMode
+% ScanMode: 1 : 100�  Step 0.25�
+%           2 : 100�  Step 0.5�
+%           3 : 100�  Step 1.0�
+%           4 : 180�  Step 0.5� #default
+%           5 : 180�  Step 1.0�
+% sensor_Laser = sensorLaserChgMeasurementMode(sensor_Laser,'cm');
+sensor_Laser = sensorLaserSetMode(sensor_Laser,'Operation');% put into Operation-Mode
+
+%% First Telegramm
+laser_array = [];
+ while(EXIT_VAR==0)
+    laser_Data = sensorLaserGetData(sensor_Laser);
+    laser_array = [,laser_Data]
+    figure(1),clf;
+    hold on;
+    plot(laser_Data,'+');
+    grid
+    ylim([0 12000]);
+    disp('#');
+    
+ end
+delete(handles.figure1)
+% sensor_Laser= sensorLaserReset(sensor_Laser); %Reset the sensor
+sensorLaserShutdown(sensor_Laser); % Shutdown the communication
+
+
