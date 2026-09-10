@@ -594,7 +594,7 @@ ros/
   kinect_aux/                Kinect tilt motor node
   learning_image_geometry/   stock package config, unmodified
   pioneer_tf/                standalone TF broadcaster
-  teleop_base/                joystick/pedal teleoperation, two publisher variants
+  teleop_base/                joystick/pedal teleoperation
   config/                    map file for the demo environment
   setup/                     one-time environment setup scripts
 
@@ -603,7 +603,7 @@ matlab/
   dataset_analysis/          batch analysis of recorded demonstration logs
   steering_wheel_gui/        remote teleoperation GUI (client/server)
   sick_laser_interface/      laser serial protocol driver
-  particle_filter_sim/       Monte Carlo localization coursework, separate from the thesis
+  particle_filter_sim/       Monte Carlo localization
 
 tools/
   servo_serial/              pan servo serial control (C++)
